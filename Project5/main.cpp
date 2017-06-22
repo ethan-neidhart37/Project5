@@ -1,12 +1,12 @@
-// Project 1
-// Contains code to run files p1a.cpp and p1b.cpp
+// Project 5
+// Contains code to run files p5a.cpp and p5b.cpp
 
 #include <iostream>
 #include "p5a.h"
 #include "p5b.h"
 
 int main() {
-	// Run p1a.cpp/p1b.cpp
+	// Run p5a.cpp/p5b.cpp
 
 	int num;
 	char select;
@@ -25,7 +25,8 @@ int main() {
 			case 1: knapsackRun(); break;
 			case 2: graphColoring(); break;
 			case 3: exit(0);
-			default: std::cout << "Please select correct input. [1/2/3]"; break;
+			default: 
+				std::cout << "Please select correct input. [1/2/3]";
 			}
 		} while (num != 1 && num != 2);
 
