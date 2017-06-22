@@ -236,9 +236,9 @@ int steepestDescent(Graph &g, int numColors, int time)
 	clock_t startTime = clock();
 	greedyColor(g, numColors);
 
-	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+	/*pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
 	for (Graph::vertex_iterator vItr = vItrRange.first; vItr != vItrRange.second && ((clock() - startTime) / CLOCKS_PER_SEC < time); ++vItr)
-		neighborhood(g, vItr, numColors);
+		neighborhood(g, vItr, numColors);*/
 
 	return checkConflicts(g);
 }
@@ -308,13 +308,10 @@ void graphColoring()
 		cout << endl;
 
 		// Part 1: Steepest Descent
-		cout << "Steepest Descent:" << endl;
 		numConflicts = steepestDescent(g1, numColors, 300);
 		printSolution(g1, numConflicts, fileName + "part1");
-		cout << endl;
 
 		// Part 2: Other Algorithm (Random)
-		cout << "Random:" << endl;
 		numConflicts = randomColor(g2, numColors);
 		printSolution(g2, numConflicts, fileName + "part2");
 	}

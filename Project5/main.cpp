@@ -25,7 +25,8 @@ int main() {
 			case 1: knapsackRun(); break;
 			case 2: graphColoring(); break;
 			case 3: exit(0);
-			default: std::cout << "Please select correct input. [1/2/3]"; break;
+			default: 
+				std::cout << "Please select correct input. [1/2/3]";
 			}
 		} while (num != 1 && num != 2);
 
