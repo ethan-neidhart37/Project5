@@ -1,12 +1,12 @@
-// Project 1
-// Contains code to run files p1a.cpp and p1b.cpp
+// Project 5
+// Contains code to run files p5a.cpp and p5b.cpp
 
 #include <iostream>
 #include "p5a.h"
 #include "p5b.h"
 
 int main() {
-	// Run p1a.cpp/p1b.cpp
+	// Run p5a.cpp/p1b.cpp
 
 	int num;
 	char select;

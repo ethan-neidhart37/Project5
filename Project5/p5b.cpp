@@ -4,23 +4,28 @@
 
 #include "p5b.h"
 
-void initializeGraph(Graph &g, ifstream &fin)
-// Initialize g using data from fin.
+void initializeGraphs(Graph &g1, Graph &g2, ifstream &fin)
+// Initialize g1 and g2 using data from fin.
 {
 	int n, e;
 	int j, k;
 
 	fin >> n >> e;
-	Graph::vertex_descriptor v;
+	Graph::vertex_descriptor v1;
+	Graph::vertex_descriptor v2;
 
 	// Add nodes.
 	for (int i = 0; i < n; i++)
-		v = add_vertex(g);
+	{
+		v1 = add_vertex(g1);
+		v2 = add_vertex(g2);
+	}
 
 	for (int i = 0; i < e; i++)
 	{
 		fin >> j >> k;
-		add_edge(j, k, g);  // Assumes vertex list is type vecS
+		add_edge(j, k, g1);  // Assumes vertex list is type vecS
+		add_edge(j, k, g2);
 	}
 }
 
@@ -81,17 +86,21 @@ int checkConflicts(Graph &g)
 		Graph::vertex_descriptor s = source(*eItr, g);
 		if (g[t].color == g[s].color)
 		{
-			if (!g[t].marked)
-			{
-				numConflicts++;
-				g[t].marked = true;
-			}
-			if (!g[s].marked)
-			{
-				numConflicts++;
-				g[s].marked = true;
-			}
+			numConflicts++;
 		}
+	}
+	return numConflicts;
+}
+
+int nodeConflicts(Graph &g, Graph::vertex_iterator &v, int color)
+{
+	int numConflicts = 0;
+
+	pair<Graph::adjacency_iterator, Graph::adjacency_iterator> vItrRange = adjacent_vertices(*v, g);
+	for (Graph::adjacency_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
+	{
+		if (g[*vItr].color == color)
+			numConflicts++;
 	}
 	return numConflicts;
 }
@@ -160,10 +169,93 @@ int exhaustiveColoring(Graph &g, int numColors, int t)
 	return numConflicts;
 }
 
-void printSolution(Graph &g, int numConflicts, string filename, string folder)
+void greedyNode(Graph &g, Graph::vertex_iterator &v, int numColors)
+// Sets "lowest" color for a node without conflicts. Otherwise, sets 0.
+{
+	int color = 0;
+
+	Graph::vertex_descriptor targetNode;
+	Graph::vertex_descriptor sourceNode;
+	pair<Graph::adjacency_iterator, Graph::adjacency_iterator> vItrRange = adjacent_vertices(*v, g);
+	Graph::adjacency_iterator vItr = vItrRange.first;
+
+	while (vItr != vItrRange.second)
+	{
+		if (g[*vItr].color == color)
+		{
+			color++;
+			vItr = vItrRange.first;
+		}
+		else
+		{
+			vItr++;
+		}
+
+		if (color == numColors)
+		{
+			color = 0;
+			break;
+		}
+	}
+	g[*v].color = color;
+}
+
+int greedyColor(Graph &g, int numColors)
+{
+	setNodeColors(g, 0);
+
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+	for (Graph::vertex_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
+		greedyNode(g, vItr, numColors);
+
+	return checkConflicts(g);
+}
+
+void neighborhood(Graph &g, Graph::vertex_iterator &v, int numColors)
+// Search for a better color for node
+{
+	int initialColor = g[*v].color;
+	int numConflicts = nodeConflicts(g, v, initialColor);
+
+	for (int color = 0; color < numColors && numConflicts > 0; color++)
+	{
+		if (color == initialColor)
+			continue;
+
+		int tempConflicts = nodeConflicts(g, v, color);
+		if (tempConflicts < numConflicts)
+		{
+			numConflicts = tempConflicts;
+			g[*v].color = color;
+		}
+	}
+}
+
+int steepestDescent(Graph &g, int numColors, int time)
+{
+	clock_t startTime = clock();
+	greedyColor(g, numColors);
+
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+	for (Graph::vertex_iterator vItr = vItrRange.first; vItr != vItrRange.second && ((clock() - startTime) / CLOCKS_PER_SEC < time); ++vItr)
+		neighborhood(g, vItr, numColors);
+
+	return checkConflicts(g);
+}
+
+int randomColor(Graph &g, int numColors)
+{
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+	for (Graph::vertex_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
+		g[*vItr].color = rand() % numColors;
+
+	return checkConflicts(g);
+}
+
+void printSolution(Graph &g, int numConflicts, string filename)
 // Print the solution found.
 {
-	string filepath = folder + "output\\" + filename + ".output";
+	string filepath = "color/output/" + filename + ".output";
 	ofstream myfile;
 	myfile.open((filepath).c_str());
 
@@ -175,8 +267,8 @@ void printSolution(Graph &g, int numConflicts, string filename, string folder)
 	myfile.close();
 }
 
-int graphColoring()
-// Exhaustively finds the most efficient graph coloring solution (in 10 minute limit)
+void graphColoring()
+// Finds a graph coloring solution
 // Takes in an input file for graph, results in output file
 {
 	char x;
@@ -186,15 +278,11 @@ int graphColoring()
 	// Read the name of the graph from the keyboard or
 	// hard code it here for testing.
 
-	// Hard-coded location of files so that only file name must be entered
-	string fileFolder = "C:\\Users\\Ethan\\Documents\\GitHub\\Algorithms\\Project1\\Project1\\color\\";
-
 	//fileName = "color12-3";
 
-	cout << "Enter filename: ";
+	cout << "Enter filename" << endl;
 	cin >> fileName;
-
-	string filePath = fileFolder + "input\\" + fileName + ".input";
+	string filePath = "color/input/" + fileName + ".input";
 
 	fin.open((filePath).c_str());
 	if (!fin)
@@ -206,20 +294,29 @@ int graphColoring()
 	try
 	{
 		cout << "Reading graph" << endl;
-		Graph g;
+		Graph g1;
+		Graph g2;
 		int numColors;
 		int numConflicts = -1;
 		fin >> numColors;
-		initializeGraph(g, fin);
+		initializeGraphs(g1, g2, fin);
+	
+		greedyColor(g2, numColors);
 
-		cout << "Num nodes: " << num_vertices(g) << endl;
-		cout << "Num edges: " << num_edges(g) << endl;
+		cout << "Num nodes: " << num_vertices(g1) << endl;
+		cout << "Num edges: " << num_edges(g1) << endl;
 		cout << endl;
 
-		// cout << g;
+		// Part 1: Steepest Descent
+		cout << "Steepest Descent:" << endl;
+		numConflicts = steepestDescent(g1, numColors, 300);
+		printSolution(g1, numConflicts, fileName + "part1");
+		cout << endl;
 
-		numConflicts = exhaustiveColoring(g, numColors, 600);
-		printSolution(g, numConflicts, fileName, fileFolder);
+		// Part 2: Other Algorithm (Random)
+		cout << "Random:" << endl;
+		numConflicts = randomColor(g2, numColors);
+		printSolution(g2, numConflicts, fileName + "part2");
 	}
 	catch (indexRangeError &ex)
 	{

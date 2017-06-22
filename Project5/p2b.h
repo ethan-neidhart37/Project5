@@ -5,7 +5,6 @@
 #include "d_except.h"
 #include <fstream>
 #include <time.h>
-#include <stdlib.h>
 
 #include <boost/graph/adjacency_list.hpp>
 
@@ -39,8 +38,8 @@ struct EdgeProperties
 	bool marked;
 };
 
-void initializeGraphs(Graph &g, Graph &g2, ifstream &fin);
-//void initializeGraphs(Graph &g, Graph &g2, ifstream &fin);
+void initializeGraph(Graph &g, ifstream &fin);
+void initializeGraph(Graph &g, ifstream &fin);
 void cloneGraphColors(Graph &g, Graph &c);
 void setNodeColors(Graph &g, int c);
 void setNodeWeights(Graph &g, int w);
@@ -48,5 +47,12 @@ void setNodeMarks(Graph &g, bool b);
 int checkConflicts(Graph &g);
 bool increment(Graph &g, Graph::vertex_iterator vItr, int numColors, Graph::vertex_iterator vEnd);
 int exhaustiveColoring(Graph &g, int numColors, int t);
-void printSolution(Graph &g, int numConflicts, string filename);
-void graphColoring();
+void printSolution(Graph &g, int numConflicts, string filename, string folder);
+
+vector<Graph::vertex_descriptor> getVertices(Graph &g);
+int getDegree(Graph::vertex_descriptor &v, Graph &g);
+void setColor(int color, Graph::vertex_descriptor &v, Graph &g);
+int getBestColor(int colorSet, Graph::vertex_descriptor &v, Graph &g);
+int greedyColor(Graph &g, int colorSet);
+
+int graphColoring();
