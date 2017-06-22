@@ -6,7 +6,7 @@
 #include "p5b.h"
 
 int main() {
-	// Run p5a.cpp/p1b.cpp
+	// Run p5a.cpp/p5b.cpp
 
 	int num;
 	char select;
