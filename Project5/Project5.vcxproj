@@ -125,6 +125,7 @@
     <ClInclude Include="d_matrix.h" />
     <ClInclude Include="d_random.h" />
     <ClInclude Include="knapsack.h" />
+    <ClInclude Include="neighbor.h" />
     <ClInclude Include="p5a.h" />
     <ClInclude Include="p5b.h" />
   </ItemGroup>

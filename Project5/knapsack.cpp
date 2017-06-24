@@ -327,3 +327,31 @@ vector<int> knapsack::sort() const
 
 	return items;
 }
+
+vector<int> knapsack::getIndicies() const
+{
+	vector<int> indicies;
+
+	for (int i = 0; i < numObjects; i++)
+	{
+		if (isSelected(i))
+		{
+			indicies.push_back(i);
+		}
+	}
+
+	return indicies;
+}
+
+void knapsack::setItems(vector<int> includedIndicies)
+{
+	for (int i = 0; i < numObjects; i++)
+	{
+		unSelect(i);
+	}
+
+	for (int i = 0; i < includedIndicies.size(); i++)
+	{
+		select(includedIndicies[i]);
+	}
+}

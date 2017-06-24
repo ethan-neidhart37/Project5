@@ -80,6 +80,98 @@ void greedyKnapsack(knapsack &k)
 	}
 }
 
+Neighbor greedyKnapsackN(knapsack &k)
+// Greedy algorithm to solve knapsack problem by grabbing highest priority items that will fit
+{
+	int limit = k.getCostLimit();
+	int cost = 0;
+	vector<int> items = k.sort();
+
+	// The first item in this list now contains the item number of the highest priority knapsack item
+
+	for (int i = 0; i < k.getNumObjects(); i++)
+	{
+		int item = items[i];
+
+		if (cost + k.getCost(item) <= limit)
+		{
+			k.select(item);
+			cost += k.getCost(item);
+		}
+
+		if (cost == limit)
+			return;
+	}
+
+	return Neighbor(k.getValue(), k.getIndicies());
+}
+
+
+Neighbor greedyKnapsackN(knapsack &k, vector<int> indicies, int j)
+{
+	int limit = k.getCostLimit();
+	int cost = 0;
+	vector<int> items = k.sort();
+
+	k.setItems(indicies);
+	k.unSelect(j);
+
+	// The first item in this list now contains the item number of the highest priority knapsack item
+
+	for (int i = 0; i < k.getNumObjects(); i++)
+	{
+		int item = items[i];
+
+		if (cost + k.getCost(item) <= limit)
+		{
+			k.select(item);
+			cost += k.getCost(item);
+		}
+
+		if (cost == limit)
+			return;
+	}
+
+	return Neighbor(k.getValue(), k.getIndicies());
+}
+
+Neighbor bestNeighbor(knapsack &k, Neighbor &currentNeighbor)
+{
+	Neighbor newNeighbor;
+	Neighbor bestNeighbor = currentNeighbor;
+
+	vector<int> indicies(currentNeighbor.getIndicies());
+
+	for (int i = 0; i < indicies.size(); i++)
+	{
+		// Greedy knapsack with current set of items
+		newNeighbor = greedyKnapsackN(k, indicies, indicies[i]);
+
+		if (newNeighbor.getValue > bestNeighbor.getValue())
+		{
+			bestNeighbor = newNeighbor;
+		}
+	}
+
+	return bestNeighbor;
+}
+
+void steepestDecent(knapsack &k)
+{
+	vector<int> indicies;
+	Neighbor currentNeighbor(0, indicies);
+
+	Neighbor nextNeighbor = greedyKnapsackN(k);
+
+	while (currentNeighbor.getValue() < nextNeighbor.getValue())
+	{
+		currentNeighbor = nextNeighbor;
+		nextNeighbor = bestNeighbor(k, currentNeighbor);
+	}
+
+	k.setItems(currentNeighbor.getIndicies());
+}
+
 void knapsackOutput(knapsack & k)
 // Writes the results of the algorithm to an output file
 {
