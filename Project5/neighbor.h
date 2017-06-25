@@ -12,6 +12,7 @@
 
 using namespace std;
 
+// Use this class for knapsack (not sure about coloring) to parametize a neighbor of a point by its value and indicies.
 class Neighbor
 {
 public:
@@ -24,24 +25,3 @@ private:
 	int value;
 	vector<int> indicies;
 };
-
-Neighbor::Neighbor() 
-{}
-
-Neighbor::Neighbor(int value, vector<int>indicies)
-{
-	this->value = value;
-	this->indicies = indicies;
-}
-
-int Neighbor::getValue() const
-{
-	return value;
-}
-
-vector<int> Neighbor::getIndicies() const
-{
-	return indicies;
-}
-
-

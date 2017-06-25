@@ -27,6 +27,9 @@
     <ClCompile Include="p5b.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="neighbor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d_except.h">

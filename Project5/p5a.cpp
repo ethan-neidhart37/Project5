@@ -98,9 +98,6 @@ Neighbor greedyKnapsackN(knapsack &k)
 			k.select(item);
 			cost += k.getCost(item);
 		}
-
-		if (cost == limit)
-			return;
 	}
 
 	return Neighbor(k.getValue(), k.getIndicies());
@@ -127,9 +124,6 @@ Neighbor greedyKnapsackN(knapsack &k, vector<int> indicies, int j)
 			k.select(item);
 			cost += k.getCost(item);
 		}
-
-		if (cost == limit)
-			return;
 	}
 
 	return Neighbor(k.getValue(), k.getIndicies());
@@ -147,7 +141,7 @@ Neighbor bestNeighbor(knapsack &k, Neighbor &currentNeighbor)
 		// Greedy knapsack with current set of items
 		newNeighbor = greedyKnapsackN(k, indicies, indicies[i]);
 
-		if (newNeighbor.getValue > bestNeighbor.getValue())
+		if (newNeighbor.getValue() > bestNeighbor.getValue())
 		{
 			bestNeighbor = newNeighbor;
 		}
@@ -156,7 +150,34 @@ Neighbor bestNeighbor(knapsack &k, Neighbor &currentNeighbor)
 	return bestNeighbor;
 }
 
-void steepestDecent(knapsack &k)
+Neighbor bestNeighborTabu(knapsack &k, Neighbor &currentNeighbor, vector<int> &tabuIndicies)
+{
+	Neighbor newNeighbor;
+	Neighbor bestNeighbor = currentNeighbor;
+
+	vector<int> indicies(currentNeighbor.getIndicies());
+
+	int tabuIndex = -1;
+
+	for (int i = 0; i < indicies.size(); i++)
+	{
+		newNeighbor = greedyKnapsackN(k, indicies, indicies[i]);
+
+		if (newNeighbor.getValue() > bestNeighbor.getValue())
+		{
+			bestNeighbor = newNeighbor;
+		}
+	}
+
+	if (tabuIndex != -1)
+	{
+		tabuIndicies.push_back(tabuIndex);
+	}
+
+	return bestNeighbor;
+}
+
+void steepestDescent(knapsack &k)  
 {
 	vector<int> indicies;
 	Neighbor currentNeighbor(0, indicies);
@@ -166,7 +187,10 @@ void steepestDecent(knapsack &k)
 	while (currentNeighbor.getValue() < nextNeighbor.getValue())
 	{
 		currentNeighbor = nextNeighbor;
-		nextNeighbor = bestNeighbor(k, currentNeighbor);
+
+		// Use only 1 of these to implement basic steepestDescent or with tabu
+		//nextNeighbor = bestNeighbor(k, currentNeighbor);
+		nextNeighbor = bestNeighborTabu(k, currentNeighbor, indicies);
 	}
 
 	k.setItems(currentNeighbor.getIndicies());
@@ -232,7 +256,12 @@ void knapsackRun()
 
 		//exhaustiveKnapsack(k, 600);
 		//greedyKnapsack(k);
-		branchAndBound(k, 600);
+		//branchAndBound(k, 600);
+		steepestDescent(k);
+
+		// For steepestDescent, use bestNeighbor(knapsack &k, Neighbor &currentNeighbor) 
+		//or bestNeighborTabu(knapsack &k, Neighbor &currentNeighbor, vector<int> &tabuIndicies)
+		
 
 		// Write solution to output file
 		knapsackOutput(k);
