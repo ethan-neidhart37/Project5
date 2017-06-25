@@ -83,7 +83,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\boost_1_57_0;C:\Users\Ethan\Documents\boost_1_57_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\boost_1_57_0</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -129,6 +129,19 @@
     <ClInclude Include="neighbor.h" />
     <ClInclude Include="p5a.h" />
     <ClInclude Include="p5b.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="color\input\color12-3.input" />
+    <None Include="color\input\color12-4.input" />
+    <None Include="color\input\color192-6.input" />
+    <None Include="color\input\color192-7.input" />
+    <None Include="color\input\color192-8.input" />
+    <None Include="color\input\color24-4.input" />
+    <None Include="color\input\color24-5.input" />
+    <None Include="color\input\color48-5.input" />
+    <None Include="color\input\color48-6.input" />
+    <None Include="color\input\color96-6.input" />
+    <None Include="color\input\color96-7.input" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

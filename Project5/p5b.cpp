@@ -371,7 +371,8 @@ void graphColoring()
 		cout << endl;
 
 		// Part 1: Steepest Descent
-		numConflicts = steepestDescent(g1, numColors, 300);
+		//numConflicts = steepestDescent(g1, numColors, 300);
+		numConflicts = greedyColor(g1, numColors);
 		printSolution(g1, numConflicts, fileName + "part1");
 
 		// Part 2: Other Algorithm (Random)

@@ -54,4 +54,39 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="color\input\color12-3.input">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color\input\color12-4.input">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color\input\color24-4.input">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color\input\color24-5.input">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color\input\color48-5.input">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color\input\color48-6.input">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color\input\color96-6.input">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color\input\color96-7.input">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color\input\color192-6.input">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color\input\color192-7.input">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color\input\color192-8.input">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
