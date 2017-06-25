@@ -169,46 +169,109 @@ int exhaustiveColoring(Graph &g, int numColors, int t)
 	return numConflicts;
 }
 
-void greedyNode(Graph &g, Graph::vertex_iterator &v, int numColors)
-// Sets "lowest" color for a node without conflicts. Otherwise, sets 0.
+vector<Graph::vertex_descriptor> getVertices(Graph &g)
+// Get the number of vertices in a graph.
 {
-	int color = 0;
+	vector<Graph::vertex_descriptor> nodes;
+
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+
+	for (Graph::vertex_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
+	{
+		g[*vItr].color = -1;
+		nodes.push_back(*vItr);
+	}
+
+	return nodes;
+}
+
+int getConflict(Graph &g)
+// Same implementation as getDegree but searching for conflicts
+{
+	int conflict = 0;
 
 	Graph::vertex_descriptor targetNode;
 	Graph::vertex_descriptor sourceNode;
-	pair<Graph::adjacency_iterator, Graph::adjacency_iterator> vItrRange = adjacent_vertices(*v, g);
-	Graph::adjacency_iterator vItr = vItrRange.first;
+	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
 
-	while (vItr != vItrRange.second)
+	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
 	{
-		if (g[*vItr].color == color)
-		{
-			color++;
-			vItr = vItrRange.first;
-		}
-		else
-		{
-			vItr++;
-		}
+		targetNode = target(*eItr, g);
+		sourceNode = source(*eItr, g);
 
-		if (color == numColors)
+		if (g[targetNode].color == g[sourceNode].color)
 		{
-			color = 0;
-			break;
+			conflict++;
 		}
 	}
-	g[*v].color = color;
+
+	return conflict;
+}
+
+void setColor(int color, Graph::vertex_descriptor &v, Graph &g)
+// Set a color to graph.
+{
+	g[v].color = color;
+}
+
+int getBestColor(int numColors, Graph::vertex_descriptor &v, Graph &g)
+// Return best color pair from a set of colors.
+{
+	int color = 1;
+
+	Graph::vertex_descriptor targetNode;
+	Graph::vertex_descriptor sourceNode;
+	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
+
+	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
+	{
+		targetNode = target(*eItr, g);
+		sourceNode = source(*eItr, g);
+
+		if (targetNode == v)
+		{
+			if (g[sourceNode].color == g[v].color)
+			{
+				color++;
+				if (color == numColors)
+				{
+					return 0;
+				}
+			}
+		}
+
+		else
+		{
+			if (sourceNode == v)
+			{
+				if (g[targetNode].color == g[v].color)
+				{
+					color++;
+					if (color == numColors)
+					{
+						return 0;
+					}
+				}
+			}
+		}
+	}
+
+	return color;
 }
 
 int greedyColor(Graph &g, int numColors)
 {
-	setNodeColors(g, 0);
+	//cout << endl << "Performing Greedy";
+	int color = -1;
+	vector<Graph::vertex_descriptor> vertexVector = getVertices(g);
 
-	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
-	for (Graph::vertex_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
-		greedyNode(g, vItr, numColors);
+	for (int i = 0; i < vertexVector.size(); i++)
+	{
+		color = getBestColor(numColors, vertexVector[i], g);
+		setColor(color, vertexVector[i], g);
+	}
 
-	return checkConflicts(g);
+	return getConflict(g);
 }
 
 void neighborhood(Graph &g, Graph::vertex_iterator &v, int numColors)
