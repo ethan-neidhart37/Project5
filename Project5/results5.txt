@@ -1,10 +1,27 @@
 Authors: Ethan Neidhart, Kevin Do
 
 Knapsack: Steepest Descent and Tabu Search
-With the use of steepest descent on knapsack, we first sort the set of items, create a new neighbor of items found greedily, 
-then we compare which of the pair of neighbors have the best value when solving the knapsack problem. The results are accurate.
-But as soon as we got to knapsack1024, it took about 4 minutes to compare each of these neighbors and provide accurate results.
-For tabu search, we've gotten the same results as our steepest descent implementation. But at knapsack1024, it seems that tabu
-solved knapsack very slighty quicker than steepest descent. These algorithms were solved faster than exhaustive and provided
-accurate results. Compared to greedy and branch/bound, it solved a bit slower because of the added complexity or sorting and 
-comparing neighbors, but results are more accurate. Lastly, we see ILP is still the best method in terms of speed and accuracy.
+With the use of steepest descent on knapsack, we first sort the set of items,
+create a new neighbor of items found greedily, then we compare which of the
+pair of neighbors have the best value when solving the knapsack problem. The
+results are accurate. But as soon as we got to knapsack1024, it took about 4
+minutes to compare each of these neighbors and provide accurate results. For
+tabu search, we've gotten the same results as our steepest descent
+implementation. But at knapsack1024, it seems that tabu solved knapsack very
+slighty quicker than steepest descent. These algorithms were solved faster than
+exhaustive and provided accurate results. Compared to greedy and branch/bound,
+it solved a bit slower because of the added complexity or sorting and comparing
+neighbors, but results are more accurate. Lastly, we see ILP is still the best
+method in terms of speed and accuracy.
+
+Graph Coloring: Steepest Descent and Random
+Using steepest descent on the graph coloring problem, we first use the greedy
+algorithm from project 2 to obtain a solution. We then use 2-opt as our
+neighborhood function, going to each node and seeing if switching its color
+with one of its neighbors will produce a better solution. It ran almost as fast
+as the greedy implementation (the difference being negligible), but did not
+produce better results for us, as none of the neighboring solutions were any
+better. The random algorithm ran very quickly, but produced very inconsistent
+results. That being said, it did outperform the greedy algorithm more often
+than expected, but did not perform anywhere near as well as ILP. Overall,
+ILP seems to have been the best at both optimal solutions and quick solutions.
