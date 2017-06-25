@@ -274,16 +274,17 @@ int greedyColor(Graph &g, int numColors)
 	return getConflict(g);
 }
 
-void neighborhood(Graph &g, Graph::vertex_iterator &v, int numColors)
+void twoOpt(Graph &g, Graph::vertex_iterator &v, int numColors)
 // Search for a better color for node
 {
 	int initialColor = g[*v].color;
 	int numConflicts = nodeConflicts(g, v, initialColor);
 
-	for (int color = 0; color < numColors && numConflicts > 0; color++)
+	pair<Graph::adjacency_iterator, Graph::adjacency_iterator> vItrRange = adjacent_vertices(*v, g);
+
+	for (Graph::adjacency_iterator vItr = vItrRange.first; vItr != vItrRange.second && numConflicts > 0; ++vItr)
 	{
-		if (color == initialColor)
-			continue;
+		int color = g[*vItr].color;
 
 		int tempConflicts = nodeConflicts(g, v, color);
 		if (tempConflicts < numConflicts)
@@ -371,8 +372,7 @@ void graphColoring()
 		cout << endl;
 
 		// Part 1: Steepest Descent
-		//numConflicts = steepestDescent(g1, numColors, 300);
-		numConflicts = greedyColor(g1, numColors);
+		numConflicts = steepestDescent(g1, numColors, 300);
 		printSolution(g1, numConflicts, fileName + "part1");
 
 		// Part 2: Other Algorithm (Random)
