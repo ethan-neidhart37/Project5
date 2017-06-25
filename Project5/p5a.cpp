@@ -80,6 +80,137 @@ void greedyKnapsack(knapsack &k)
 	}
 }
 
+Neighbor greedyKnapsackN(knapsack &k)
+// Greedy algorithm to solve knapsack problem by grabbing highest priority items that will fit
+{
+	int limit = k.getCostLimit();
+	//int cost = 0;
+	//vector<int> items = k.sort();
+
+	// The first item in this list now contains the item number of the highest priority knapsack item
+
+	for (int i = 0; i < k.getNumObjects(); i++)
+	{
+		/*
+		int item = items[i];
+
+		if (cost + k.getCost(item) <= limit)
+		{
+			k.select(item);
+			cost += k.getCost(item);
+		}
+		*/
+		if (k.getCost() + k.getCost(i) <= limit)
+		{
+			k.select(i);
+		}
+	}
+
+	return Neighbor(k.getValue(), k.getIndicies());
+}
+
+
+Neighbor greedyKnapsackN(knapsack &k, vector<int> indicies, int j)
+{
+	int limit = k.getCostLimit();
+	//int cost = 0;
+	//vector<int> items = k.sort();
+
+	k.setItems(indicies);
+	k.unSelect(j);
+
+	// The first item in this list now contains the item number of the highest priority knapsack item
+
+	for (int i = 0; i < k.getNumObjects(); i++)
+	{
+		/*
+		int item = items[i];
+
+		if (cost + k.getCost(item) <= limit)
+		{
+			k.select(item);
+			cost += k.getCost(item);
+		}
+		*/
+
+		if (!k.isSelected(i) && i != j && k.getCost() + k.getCost(i) <= k.getCostLimit())
+		{
+			k.select(i);
+		}
+	}
+
+	return Neighbor(k.getValue(), k.getIndicies());
+}
+
+Neighbor bestNeighbor(knapsack &k, Neighbor &currentNeighbor)
+{
+	Neighbor newNeighbor;
+	Neighbor bestNeighbor = currentNeighbor;
+
+	vector<int> indicies(currentNeighbor.getIndicies());
+
+	for (int i = 0; i < indicies.size(); i++)
+	{
+		// Greedy knapsack with current set of items
+		newNeighbor = greedyKnapsackN(k, indicies, indicies[i]);
+
+		if (newNeighbor.getValue() > bestNeighbor.getValue())
+		{
+			bestNeighbor = newNeighbor;
+		}
+	}
+
+	return bestNeighbor;
+}
+
+Neighbor bestNeighborTabu(knapsack &k, Neighbor &currentNeighbor, vector<int> &tabuIndicies)
+{
+	Neighbor newNeighbor;
+	Neighbor bestNeighbor = currentNeighbor;
+
+	vector<int> indicies(currentNeighbor.getIndicies());
+
+	int tabuIndex = -1;
+
+	for (int i = 0; i < indicies.size(); i++)
+	{
+		newNeighbor = greedyKnapsackN(k, indicies, indicies[i]);
+
+		if (newNeighbor.getValue() > bestNeighbor.getValue())
+		{
+			bestNeighbor = newNeighbor;
+		}
+	}
+
+	if (tabuIndex != -1)
+	{
+		tabuIndicies.push_back(tabuIndex);
+	}
+
+	return bestNeighbor;
+}
+
+void steepestDescent(knapsack &k)  
+{
+	k.sort();
+
+	vector<int> indicies;
+	Neighbor currentNeighbor(0, indicies);
+
+	Neighbor nextNeighbor = greedyKnapsackN(k);
+
+	while (currentNeighbor.getValue() < nextNeighbor.getValue())
+	{
+		currentNeighbor = nextNeighbor;
+
+		// Use only 1 of these to implement basic steepestDescent or with tabu
+		nextNeighbor = bestNeighbor(k, currentNeighbor);
+		//nextNeighbor = bestNeighborTabu(k, currentNeighbor, indicies);
+	}
+
+	k.setItems(currentNeighbor.getIndicies());
+}
+
 void knapsackOutput(knapsack & k)
 // Writes the results of the algorithm to an output file
 {
@@ -123,40 +254,66 @@ void knapsackRun()
 
 	// fileName = "knapsack/input/knapsack16.input";
 
+	/*
 	cout << "Enter filename" << endl;
 	cin >> fileName;
 	string filePath = "knapsack/input/" + fileName + ".input";
+	*/
 
-	fin.open(filePath.c_str());
-	if (!fin)
+	vector<string> s;
+	s.push_back("knapsack/input/knapsack8.input");
+	s.push_back("knapsack/input/knapsack12.input");
+	s.push_back("knapsack/input/knapsack16.input");
+	s.push_back("knapsack/input/knapsack20.input");
+	s.push_back("knapsack/input/knapsack28.input");
+	s.push_back("knapsack/input/knapsack32.input");
+	s.push_back("knapsack/input/knapsack48.input");
+	s.push_back("knapsack/input/knapsack64.input");
+	s.push_back("knapsack/input/knapsack128.input");
+	s.push_back("knapsack/input/knapsack256.input");
+	s.push_back("knapsack/input/knapsack512.input");
+	s.push_back("knapsack/input/knapsack1024.input");
+
+
+	for (int i = 0; i < s.size(); i++)
 	{
-		cerr << "Cannot open " << fileName << endl;
-		exit(1);
+		fileName = s[i];
+		fin.open(fileName.c_str());
+		if (!fin)
+		{
+			cerr << "Cannot open " << fileName << endl;
+			exit(1);
+		}
+
+		try
+		{
+			knapsack k(fin);
+
+			//exhaustiveKnapsack(k, 600);
+			//greedyKnapsack(k);
+			//branchAndBound(k, 600);
+			steepestDescent(k);
+
+			// For steepestDescent, use bestNeighbor(knapsack &k, Neighbor &currentNeighbor) 
+			//or bestNeighborTabu(knapsack &k, Neighbor &currentNeighbor, vector<int> &tabuIndicies)
+
+
+			// Write solution to output file
+			knapsackOutput(k);
+
+			cout << endl << "Best solution" << endl;
+			k.printSolution();
+		}
+
+		catch (indexRangeError &ex)
+		{
+			cout << ex.what() << endl; exit(1);
+		}
+		catch (rangeError &ex)
+		{
+			cout << ex.what() << endl; exit(1);
+		}
+
+		fin.close();
 	}
-
-	try
-	{
-		knapsack k(fin);
-
-		//exhaustiveKnapsack(k, 600);
-		//greedyKnapsack(k);
-		branchAndBound(k, 600);
-
-		// Write solution to output file
-		knapsackOutput(k);
-
-		cout << endl << "Best solution" << endl;
-		k.printSolution();
-	}
-
-	catch (indexRangeError &ex)
-	{
-		cout << ex.what() << endl; exit(1);
-	}
-	catch (rangeError &ex)
-	{
-		cout << ex.what() << endl; exit(1);
-	}
-
-	fin.close();
 }

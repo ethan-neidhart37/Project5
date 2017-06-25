@@ -1,0 +1,10 @@
+Authors: Ethan Neidhart, Kevin Do
+
+Knapsack: Steepest Descent and Tabu Search
+With the use of steepest descent on knapsack, we first sort the set of items, create a new neighbor of items found greedily, 
+then we compare which of the pair of neighbors have the best value when solving the knapsack problem. The results are accurate.
+But as soon as we got to knapsack1024, it took about 4 minutes to compare each of these neighbors and provide accurate results.
+For tabu search, we've gotten the same results as our steepest descent implementation. But at knapsack1024, it seems that tabu
+solved knapsack very slighty quicker than steepest descent. These algorithms were solved faster than exhaustive and provided
+accurate results. Compared to greedy and branch/bound, it solved a bit slower because of the added complexity or sorting and 
+comparing neighbors, but results are more accurate. Lastly, we see ILP is still the best method in terms of speed and accuracy.

@@ -30,6 +30,8 @@ public:
 	bool isFathomed(int incumbent);
 	vector<bool> getSelected();
 	vector<int> sort() const;
+	vector<int> getIndicies() const;
+	void setItems(vector<int> includedIndicies);
 
 private:
 	int numObjects;

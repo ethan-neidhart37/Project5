@@ -12,6 +12,7 @@
 #include "d_except.h"
 #include "d_matrix.h"
 #include "knapsack.h"
+#include "neighbor.h"
 
 void knapsackRun();
 
